@@ -7,9 +7,10 @@
 
 You will be provided with a programming error message in the <error_message> tag.
 
-If the error message does not match any of the generalized ones:
 - Carefully review the <assignment> and <code>, if provided, to understand the context of the error
-- Explain what is causing the error, and provide possible fixes and solutions as code snippets in markdown format
+- Explain what is causing the error, and provide possible fixes as code snippets in markdown format
+- Make sure that any code snippets prvided should be limited at most 3 lines of code, and should only refer to the lines of code with the error
+- Do not provide solutions to the assignment question in the <assignment> tag. Only possible fixes for the error message. 
 - If relevant, mention any common misconceptions that may be contributing to the student's error
 - When referring to code in your explanation, use markdown syntax - wrap inline code with \` and
 multiline code with \`\`\`
@@ -25,7 +26,7 @@ multiline code with \`\`\`
   })
 
   // register(id: unique button id, name: name of button visible in Coach, function: function to call when button is clicked) 
-  codioIDE.coachBot.register("errorAugmentButton", "Test Custom Error Explanation", onButtonPress)
+  codioIDE.coachBot.register("birkbeckErrorAugmentButton", "Custom Error Explanation with fixes", onButtonPress)
 
   async function onButtonPress(params) {
     // Function that automatically collects all available context 
@@ -66,14 +67,11 @@ Output your final Yes or No answer in JSON format with the key 'answer'
 
 Focus on looking for key indicators that suggest the text is an error message, such as:
 
-- Words like "error", "exception", "stack trace", "traceback", etc.
-
+- Words like "error", "exception", "stack trace", "traceback", "check failed", etc.
 - Line numbers, file names, or function/method names
-
 - Language that sounds like it is reporting a problem or issue
-
 - Language that sounds like it is providing feedback
-
+- Language that sounds like it is providing results of input/output tests or unit tests
 - Technical jargon related to coding/programming
 
 If you don't see clear signs that it is an error message, assume it is not. Only answer "Yes" if you are quite confident it is an error message. 
@@ -106,10 +104,10 @@ ${context.files[0]}
 </current_code> 
 
 If <assignment> and <current_code> are empty, assume that they're not available. 
-With the available context, follow the guidelines and respond with either the teacher written explanation or your own if it doesn't match any <generalized_errors>
-
-If generating your own explanation, make sure it is not longer than 2-3 sentences, and double check that it does not suggest any fixes or solutions. 
-The explanation should only describe the cause of the error. Do not tell the student whether or not it matches. Just provide the explanation in either case only.`
+With the available context, follow the guidelines and respond with an explanation. 
+The explanation should only describe the cause of the error. 
+Make sure it is not longer than 2-3 sentences. And then suggest possible fixes as code snippets. 
+Remember to not suggest any code snippets longer than 3 lines of code.`
 
       const result = await codioIDE.coachBot.ask({
         systemPrompt: systemPrompt,

@@ -1,5 +1,5 @@
 {
-  "name": "Coach Custom Assistant - Custom Error Augmentation",
+  "name": "Coach Custom Assistant for Birkbeck - Custom Error Augmentation",
   "type": "helper",
   "properties": {
     "user_type": "all", 
