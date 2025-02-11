@@ -1,7 +1,7 @@
 // Wrapping the whole extension in a JS function and calling it immediately 
 // (ensures all global variables set in this extension cannot be referenced outside its scope)
 (async function(codioIDE, window) {
-  
+
   // Refer to Anthropic's guide on system prompts: https://docs.anthropic.com/claude/docs/system-prompts
   const systemPrompt = `You are a helpful assistant helping students understand programming error messages.
 
@@ -9,18 +9,24 @@ You will be provided with a programming error message in the <error_message> tag
 
 - Carefully review the <assignment> and <code>, if provided, to understand the context of the error
 - Explain what is causing the error, and provide possible fixes as code snippets in markdown format
-- Make sure that any code snippets prvided should be limited at most 3 lines of code, and should only refer to the lines of code with the error
-- Do not provide solutions to the assignment question in the <assignment> tag. Only possible fixes for the error message. 
+- Make sure that any code snippets prvided should be limited at most 2 lines of code, and should only refer to the lines of code with the error and shouldn't provide anything more. 
+- Do not provide solutions to the entire or the rest of the assignment question in the <assignment> tag. Only possible fixes for the current error. 
 - If relevant, mention any common misconceptions that may be contributing to the student's error
 - When referring to code in your explanation, use markdown syntax - wrap inline code with \` and
 multiline code with \`\`\`
+
+<special_instructions>
+It is important that the students don't use any prompts for input, e.g., in Python they must use 
+x = input() instead of x = input("Enter a number: ")
+If and only if students get an error that resembles this mistake, explain this to them 
+</special_instructions>
   `
     
   codioIDE.onErrorState((isError, error) => {
-    console.log('codioIDE.onErrorState', {isError, error})
+    // console.log('codioIDE.onErrorState', {isError, error})
     if (isError) {
       codioIDE.coachBot.showTooltip("I can help explain this error...", () => {
-        codioIDE.coachBot.open({id: "errorAugmentButton", params: "tooltip"})
+        codioIDE.coachBot.open({id: "birkbeckErrorAugmentButton", params: "tooltip"})
       })
     }
   })
@@ -31,14 +37,15 @@ multiline code with \`\`\`
   async function onButtonPress(params) {
     // Function that automatically collects all available context 
     // returns the following object: {guidesPage, assignmentData, files, error}
-
+    
     let context = await codioIDE.coachBot.getContext()
-    console.log(context)
+    console.log("onButtonPress", context)
 
     let input
 
     if (params == "tooltip") { 
       input = context.error.text
+    //   console.log("context.error.text", input)
       codioIDE.coachBot.write(context.error.text, codioIDE.coachBot.MESSAGE_ROLES.USER)
     } else {
 
@@ -86,6 +93,10 @@ If it is not a traditional error message, only answer "Yes" if it sounds like it
 
     if (validation_result.result.includes("Yes")) {
         //Define your assistant's userPrompt - this is where you will provide all the context you collected along with the task you want the LLM to generate text for.
+        
+        console.log("guide page", context.guidesPage)
+        console.log("file", context.files[0])
+        
         const userPrompt = `Here is the error message:
 
 <error_message>
@@ -107,7 +118,8 @@ If <assignment> and <current_code> are empty, assume that they're not available.
 With the available context, follow the guidelines and respond with an explanation. 
 The explanation should only describe the cause of the error. 
 Make sure it is not longer than 2-3 sentences. And then suggest possible fixes as code snippets. 
-Remember to not suggest any code snippets longer than 3 lines of code.`
+Remember to not suggest any code snippets longer than 2 lines of code.
+Remember to follow the special instructions if there is an error and students have used a prompt in the input function`
 
       const result = await codioIDE.coachBot.ask({
         systemPrompt: systemPrompt,
