@@ -124,8 +124,8 @@ Remember to follow the special instructions if there is an error and students ha
       const result = await codioIDE.coachBot.ask({
         systemPrompt: systemPrompt,
         messages: [{"role": "user", "content": userPrompt}]
-        codioIDE.coachBot.write(userPrompt)
       })
+      codioIDE.coachBot.write(userPrompt)
     }
     else {
         codioIDE.coachBot.write("This doesn't look like an error. I'm sorry, I can only help you by explaining programming error messages.")
